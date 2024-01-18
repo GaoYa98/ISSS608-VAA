@@ -7,6 +7,41 @@
     "text": "Welcome to ISSS608 Visual Analytics and Application homepage:)\nIn this website, you will find my coursework prepared for this course."
   },
   {
+    "objectID": "index.html#recent-posts",
+    "href": "index.html#recent-posts",
+    "title": "Visual Analytics and Applications",
+    "section": "Recent Posts",
+    "text": "Recent Posts"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html",
+    "title": "Hands-on_Ex02",
+    "section": "",
+    "text": "pacman::p_load(ggrepel, patchwork, \n               ggthemes, hrbrthemes,\n               tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#beyond-ggplot2-annotation-ggrepel",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#beyond-ggplot2-annotation-ggrepel",
+    "title": "Hands-on_Ex02",
+    "section": "3.1 Beyond ggplot2 Annotation: ggrepel",
+    "text": "3.1 Beyond ggplot2 Annotation: ggrepel\nggrepel provides geoms for ggplot2 to repel overlapping text labels:\ngeom_text_repel(), geom_label_repel()\n\nWith ggrepelWithout ggrepel\n\n\n\n\nShow the code\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point(aes(color = ENGLISH+MATHS)) +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  geom_label_repel(aes(label = ID), \n                   fontface = \"bold\") +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Maths scores for Primary 3\")\n\n\n\n\n\n\n\n\n\nShow the code\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point(aes(color = ENGLISH+MATHS)) +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  geom_label(aes(label = ID), \n             hjust = .5, \n             vjust = -.5) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Maths scores for Primary 3\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#beyond-ggplot2-themes",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#beyond-ggplot2-themes",
+    "title": "Hands-on_Ex02",
+    "section": "3.2 Beyond ggplot2: Themes",
+    "text": "3.2 Beyond ggplot2: Themes\nggplot2 comes with eight built-in themes, they are: theme_gray(), theme_bw(), theme_classic(), theme_dark(), theme_light(), theme_linedraw(), theme_minimal(), and theme_void().\nThese are complete themes which control all non-data display. Use theme() if you just need to tweak the display of an existing theme.\n\ntheme_classictheme_darktheme_minimal\n\n\n\n\nShow the code\nggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey90\", \n                 fill=\"cadetblue3\") +\n  theme_classic() +\n  ggtitle(\"Distribution of Maths scores\") \n\n\n\n\n\n\n\n\n\nShow the code\nggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey90\", \n                 fill=\"antiquewhite3\") +\n  theme_dark() +\n  ggtitle(\"Distribution of Maths scores\") \n\n\n\n\n\n\n\n\n\nShow the code\nggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey90\", \n                 fill=\"azure3\") +\n  theme_minimal() +\n  ggtitle(\"Distribution of Maths scores\") \n\n\n\n\n\n\n\n\n\n3.2.1 Working with ggtheme package\nggthemes provides ‘ggplot2’ themes that replicate the look of plots by Edward Tufte, Stephen Few, Fivethirtyeight, The Economist, ‘Stata’, ‘Excel’, and The Wall Street Journal, among others.\n\ntheme_economisttheme_fivethirtyeight\n\n\n\n\nShow the code\nggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  ggtitle(\"Distribution of Maths scores\") +\n  theme_economist()\n\n\n\n\n\n\n\n\n\nShow the code\nggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  ggtitle(\"Distribution of Maths scores\") +\n  theme_fivethirtyeight()\n\n\n\n\n\n\n\n\n\n\n3.2.2 Working with hrbthems package\nhrbrthemes package provides a base theme that focuses on typographic elements, including where various labels are placed as well as the fonts that are used.\n\n\nShow the code\nggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  ggtitle(\"Distribution of Maths scores\") +\n  theme_ipsum(axis_title_size = 10,\n              base_size = 10,\n              grid = \"Y\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#beyond-single-graph",
+    "href": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html#beyond-single-graph",
+    "title": "Hands-on_Ex02",
+    "section": "3.3 Beyond Single Graph",
+    "text": "3.3 Beyond Single Graph\nIt is not unusual that multiple graphs are required to tell a compelling visual story. There are several ggplot2 extensions provide functions to compose figure with multiple graphs.\n\n3.3.1 Creating Composite Graphics\nWe can plot more complex composite by using appropriate operators. For example, the composite figure below is plotted by using:\n“|” operator to stack two ggplot2 graphs, “/” operator to place the plots beside each other, “()” operator the define the sequence of the plotting.\n\n\nShow the code\nsct &lt;- ggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point(aes(color = ENGLISH+MATHS)) +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  geom_label_repel(aes(label = ID), \n                   fontface = \"bold\") +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Maths scores\") + theme(text=element_text(size=4), \n        axis.text=element_text(size=4),\n        axis.title=element_text(size=5),\n        plot.title=element_text(size=7), \n        legend.text=element_text(size=4),\n        legend.title=element_text(size=4))\n\nbox &lt;- ggplot(exam_data, aes(x=GENDER, y=ENGLISH+MATHS)) +\n  ggtitle(\"Gender distribution of Maths +English scores\")+ \n  geom_boxplot()+ theme(text=element_text(size=4), \n        axis.text=element_text(size=4),\n        axis.title=element_text(size=5),\n        plot.title=element_text(size=7), \n        legend.text=element_text(size=4),\n        legend.title=element_text(size=4))\n\n\nhist &lt;- ggplot(data=exam_data, \n             aes(x = MATHS+ENGLISH)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey90\", \n                 fill=\"azure3\") +\n  theme_minimal() +\n  ggtitle(\"Distribution of Maths +English scores\")+ theme(text=element_text(size=4), \n        axis.text=element_text(size=4),\n        axis.title=element_text(size=5),\n        plot.title=element_text(size=15), \n        legend.text=element_text(size=4),\n        legend.title=element_text(size=4))\n\n(sct | box ) /\n      hist\n\n\n\n\n\n\n\n3.3.2 Creating figure with insert\n\n\nShow the code\nhist + inset_element(box, \n                   left = 0.02, \n                   bottom = 0.3, \n                   right = 0.5, \n                   top = 1)\n\n\n\n\n\n\n\n3.3.3 Creating a composite figure by using patchwork and ggtheme\n\n\nShow the code\np1 &lt;- ggplot(data=exam_data, \n             aes(x = MATHS)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") + \n  coord_cartesian(xlim=c(0,100)) +\n  ggtitle(\"Distribution of Maths scores\")\n\n\np2 &lt;- ggplot(data=exam_data, \n             aes(x = ENGLISH)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  coord_cartesian(xlim=c(0,100)) +\n  ggtitle(\"Distribution of English scores\")\n\n\np3 &lt;- ggplot(data=exam_data, \n             aes(x= MATHS, \n                 y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100)) +\n  ggtitle(\"English scores versus Maths scores for Primary 3\")\n\n\npatchwork &lt;- (p1 / p2) | p3\npatchwork & theme_economist()+ theme(\n        plot.title=element_text(size=12))"
+  },
+  {
     "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
     "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html",
     "title": "Hands-on Exercise 1",
@@ -70,13 +105,6 @@
     "text": "5.6 Essential Grammatical Elements in ggplot2: themes\nThemes control elements of the graph not related to the data. For example:\nbackground colour size of fonts gridlines colour of labels Built-in themes include: - theme_gray() (default) - theme_bw() - theme_classic()\n\ntheme_graytheme_classictheme_minimal\n\n\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()\n\n\n\n\n\n\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal()"
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site\n\n1 + 1\n\n[1] 2"
-  },
-  {
     "objectID": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
     "href": "In-class_Ex/In-class_Ex01/In-class_Ex01.html",
     "title": "In-class_Ex01",
@@ -95,6 +123,6 @@
     "href": "In-class_Ex/In-class_Ex01/In-class_Ex01.html#importing-pisa-data",
     "title": "In-class_Ex01",
     "section": "Importing PISA data",
-    "text": "Importing PISA data\nThe code chunk below uses ‘read_sas’ [haven]((https://haven.tidyverse.org/index.html)\n\nstu_qqq &lt;- read_sas(\"data/cy08msp_stu_qqq.sas7bdat\")\n\n\nstu_qqq_SG &lt;- stu_qqq %&gt;%\nfilter(CNT ==\"SGP\")\n\n\nwrite_rds(stu_qqq_SG,\n          \"data/stu_qqq_SG.rds\")\n\n\nstu_qqq_SG &lt;- \n  read_rds(\"data/stu_qqq_SG.rds\")"
+    "text": "Importing PISA data\nThe code chunk below uses ‘read_sas’ ‘haven’\n\nstu_qqq &lt;- read_sas(\"data/cy08msp_stu_qqq.sas7bdat\")\n\n\nstu_qqq_SG &lt;- stu_qqq %&gt;%\nfilter(CNT ==\"SGP\")\n\n\nwrite_rds(stu_qqq_SG,\n          \"data/stu_qqq_SG.rds\")\n\n\nstu_qqq_SG &lt;- \n  read_rds(\"data/stu_qqq_SG.rds\")"
   }
 ]

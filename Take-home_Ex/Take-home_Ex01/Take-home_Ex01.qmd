@@ -1,0 +1,78 @@
+---
+title: "Take-home_Ex01"
+author: "Gao Ya"
+date: "January 21, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+---
+
+1 Overview 1.1 Setting the Scene
+
+Andreas Schleicher, the director of education at the OECD, highlighted in a BBC article in 2016 that Singapore successfully attained academic excellence without significant disparities between children from affluent and underprivileged families. Additionally, various Ministers for Education in Singapore initiated a "every school a good school" campaign. Nevertheless, there is a prevalent public perception that disparities persist, particularly between elite and neighborhood schools, as well as among students from families with varying socioeconomic statuses, including those with higher and lower socioeconomic status, and between immigrant and non-immigrant families.
+
+The 2022 Programme for International Student Assessment (PISA) data was released on December 5, 2022. PISA global education survey every three years to assess the education systems worldwide through testing 15 year old students in the subjects of mathematics, reading, and science.
+
+1.2 Our Task use appropriate Exploratory Data Analysis (EDA) methods and ggplot2 functions to reveal:
+
+the distribution of Singapore students’ performance in mathematics, reading, and science, and the relationship between these performances with schools, gender and socioeconomic status of the students.
+
+2 Set up
+
+2.1 Load the relevant packages We use the pacman::p_load() function to load the required R packages into our working environment. The loaded packages are:
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+pacman::p_load(ggrepel, 
+               ggthemes, 
+               tidyverse) 
+
+```
+
+| Package   | Description |
+|-----------|-------------|
+| ggrepel   |             |
+| ggthemes  |             |
+| tidyverse |             |
+|           |             |
+|           |             |
+
+2.2 Load Data
+
+The code chunk below uses ['read_sas'](https://haven.tidyverse.org/reference/read_sas.html) ['haven'](https://haven.tidyverse.org/index.html)
+
+```{r}
+#| eval: false
+#| #| code-fold: true
+#| code-summary: "Show the code"
+stu_qqq_SG <- 
+  read_rds("data/stu_qqq_SG.rds")
+
+math_columns <- c("PV1MATH", "PV2MATH", "PV3MATH", "PV4MATH", "PV5MATH", "PV6MATH", "PV7MATH", "PV8MATH", "PV9MATH", "PV10MATH")
+reading_columns <- c("PV1READ", "PV2READ", "PV3READ", "PV4READ", "PV5READ", "PV6READ", "PV7READ", "PV8READ", "PV9READ", "PV10READ")
+science_columns <- c("PV1SCIE", "PV2SCIE", "PV3SCIE", "PV4SCIE", "PV5SCIE", "PV6SCIE", "PV7SCIE", "PV8SCIE", "PV9SCIE", "PV10SCIE")
+
+math_avg <- rowMeans(stu_qqq_SG[, math_columns, drop = FALSE])
+reading_avg <- rowMeans(stu_qqq_SG[, reading_columns, drop = FALSE])
+science_avg <- rowMeans(stu_qqq_SG[, science_columns, drop = FALSE])
+
+stu_df <- data.frame(
+  Math_Average = math_avg,
+  Reading_Average = reading_avg,
+  Science_Average = science_avg)
+```
+
+
+
+```{r}
+
+
+```
+
+```{r}
+
+```
+

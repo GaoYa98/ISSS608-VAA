@@ -1,17 +1,17 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Visual Analytics and Applications",
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html",
+    "title": "Take-home_Ex01",
     "section": "",
-    "text": "Welcome to ISSS608 Visual Analytics and Application homepage:)\nIn this website, you will find my coursework prepared for this course."
+    "text": "1 Overview 1.1 Setting the Scene\nAndreas Schleicher, the director of education at the OECD, highlighted in a BBC article in 2016 that Singapore successfully attained academic excellence without significant disparities between children from affluent and underprivileged families. Additionally, various Ministers for Education in Singapore initiated a “every school a good school” campaign. Nevertheless, there is a prevalent public perception that disparities persist, particularly between elite and neighborhood schools, as well as among students from families with varying socioeconomic statuses, including those with higher and lower socioeconomic status, and between immigrant and non-immigrant families.\nThe 2022 Programme for International Student Assessment (PISA) data was released on December 5, 2022. PISA global education survey every three years to assess the education systems worldwide through testing 15 year old students in the subjects of mathematics, reading, and science.\n1.2 Our Task use appropriate Exploratory Data Analysis (EDA) methods and ggplot2 functions to reveal:\nthe distribution of Singapore students’ performance in mathematics, reading, and science, and the relationship between these performances with schools, gender and socioeconomic status of the students.\n2 Set up\n2.1 Load the relevant packages We use the pacman::p_load() function to load the required R packages into our working environment. The loaded packages are:\n\n\nShow the code\npacman::p_load(ggrepel, \n               ggthemes, \n               tidyverse) \n\n\n\n\n\nPackage\nDescription\n\n\n\n\nggrepel\n\n\n\nggthemes\n\n\n\ntidyverse\n\n\n\n\n\n\n\n\n\n\n\n\n2.2 Load Data\nThe code chunk below uses ‘read_sas’ ‘haven’\n\nstu_qqq_SG &lt;- \n  read_rds(\"data/stu_qqq_SG.rds\")\n\nmath_columns &lt;- c(\"PV1MATH\", \"PV2MATH\", \"PV3MATH\", \"PV4MATH\", \"PV5MATH\", \"PV6MATH\", \"PV7MATH\", \"PV8MATH\", \"PV9MATH\", \"PV10MATH\")\nreading_columns &lt;- c(\"PV1READ\", \"PV2READ\", \"PV3READ\", \"PV4READ\", \"PV5READ\", \"PV6READ\", \"PV7READ\", \"PV8READ\", \"PV9READ\", \"PV10READ\")\nscience_columns &lt;- c(\"PV1SCIE\", \"PV2SCIE\", \"PV3SCIE\", \"PV4SCIE\", \"PV5SCIE\", \"PV6SCIE\", \"PV7SCIE\", \"PV8SCIE\", \"PV9SCIE\", \"PV10SCIE\")\n\nmath_avg &lt;- rowMeans(stu_qqq_SG[, math_columns, drop = FALSE])\nreading_avg &lt;- rowMeans(stu_qqq_SG[, reading_columns, drop = FALSE])\nscience_avg &lt;- rowMeans(stu_qqq_SG[, science_columns, drop = FALSE])\n\nstu_df &lt;- data.frame(\n  Math_Average = math_avg,\n  Reading_Average = reading_avg,\n  Science_Average = science_avg)"
   },
   {
-    "objectID": "index.html#recent-posts",
-    "href": "index.html#recent-posts",
-    "title": "Visual Analytics and Applications",
-    "section": "Recent Posts",
-    "text": "Recent Posts"
+    "objectID": "In-class_Ex/In-class_Ex02/In-class_Ex02.html",
+    "href": "In-class_Ex/In-class_Ex02/In-class_Ex02.html",
+    "title": "In-class_Ex02",
+    "section": "",
+    "text": "Link to Tableau public"
   },
   {
     "objectID": "Hands-on_Ex/Hands-on_Ex02/Hands-on_Ex02.html",
@@ -124,5 +124,19 @@
     "title": "In-class_Ex01",
     "section": "Importing PISA data",
     "text": "Importing PISA data\nThe code chunk below uses ‘read_sas’ ‘haven’\n\nstu_qqq &lt;- read_sas(\"data/cy08msp_stu_qqq.sas7bdat\")\n\n\nstu_qqq_SG &lt;- stu_qqq %&gt;%\nfilter(CNT ==\"SGP\")\n\n\nwrite_rds(stu_qqq_SG,\n          \"data/stu_qqq_SG.rds\")\n\n\nstu_qqq_SG &lt;- \n  read_rds(\"data/stu_qqq_SG.rds\")"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Visual Analytics and Applications",
+    "section": "",
+    "text": "Welcome to ISSS608 Visual Analytics and Application homepage:)\nIn this website, you will find my coursework prepared for this course."
+  },
+  {
+    "objectID": "index.html#recent-posts",
+    "href": "index.html#recent-posts",
+    "title": "Visual Analytics and Applications",
+    "section": "Recent Posts",
+    "text": "Recent Posts"
   }
 ]

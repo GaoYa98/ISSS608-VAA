@@ -1,0 +1,14 @@
+---
+title: "In-class_Ex02"
+author: "Gao Ya"
+date: "January 20, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
+---
+
+![](images/clipboard-287917951.png)
+
+[Link to Tableau public](https://public.tableau.com/app/profile/ya.gao4395/viz/Annual_sales_by_region/Monthlysalesandprofitbyregion2016-2019?publish=yes)

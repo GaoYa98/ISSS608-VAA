@@ -1,4 +1,0 @@
----
-title: "In-class_Ex03"
-author: "Gao Ya"
----

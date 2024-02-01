@@ -1,6 +1,12 @@
 ---
 title: "Hands-on Exercise 1"
 author: "Gao Ya"
+date: "January 10, 2024"
+date-modified: "last-modified"
+execute: 
+  eval: true
+  echo: true
+  warning: false
 ---
 
 # 1. Getting started

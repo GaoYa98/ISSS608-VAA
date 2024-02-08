@@ -7,7 +7,6 @@ execute:
   eval: true
   echo: true
   warning: false
-  error: true
 ---
 
 

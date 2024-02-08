@@ -7,6 +7,7 @@ execute:
   eval: true
   echo: true
   warning: false
+  error: true
 ---
 
 # 1 Overview
@@ -43,7 +44,7 @@ pacman::p_load(ggrepel, ggplot2,
 ```
 
 |    Package     |                                                                      Description                                                                      |
-|:----------------------:|:---------------------------------------------:|
+|:--------------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------:|
 |    ggrepel     | A package that enhances the ggplot2 plotting system. It provides functions to automatically adjust and repel overlapping text labels in ggplot2 plots |
 | distributional |                     A package designed for exploratory data analysis and visualization of univariate and bivariate distributions                      |
 |    ggthemes    |             An extension of ggplot2 that provides additional themes and color scales for creating visually appealing and consistent plots             |
@@ -937,6 +938,7 @@ The p-value (2.12e-07) is highly significant (much smaller than the typical sign
 Therefore, we reject the null hypothesis and conclude that there is a statistically significant effect of access to internet on students' performance.
 
 ## 6. Reference
+
 [One-way ANOVA](https://gribblelab.org/teaching/stats2019/notes/One_Way_ANOVA.pdf)
 
 [ggplot density plot](http://www.sthda.com/english/wiki/ggplot2-density-plot-quick-start-guide-r-software-and-data-visualization)

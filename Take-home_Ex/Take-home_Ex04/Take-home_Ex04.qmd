@@ -1,0 +1,675 @@
+---
+title: "Take-home_Ex04"
+author: "Gao Ya & Wang Yaling"
+Date: "March 10, 2024"
+date-modified: "last-modified"
+excute:
+  eval: false
+  echo: false
+  freeze: true
+  message: false
+  warning: false 
+---
+
+::: callout-tip
+## NOTE
+
+Our group decided to split the part in this Take-home Exercise. This Take-home Exercise will be focusing on data preparation, confirmatory data analysis, clustering and decision tree. While my group mate will be focusing on EDA and other parts.
+:::
+
+# 1 Getting Started
+
+## 1.1 Download Data
+
+The data is sourced from the [Kaggle](https://www.kaggle.com/) dataset "[Resale HDB Flat Prices 2012 - 2023](https://www.kaggle.com/datasets/syrahmadi/resale-hdb-flat-prices-2000-2022?resource=download)", which comprises four CSV files as follows:
+
+![](images/Dataset.png){fig-align="center"}
+
+The research for this project will be limited to the recent 10 years, from 01/01/2013 to 31/12/2023. Therefore, the required data files are the following three:
+
+-   resale-flat-prices-based-on-registration-date-from-mar-2012-to-dec-2014.csv
+
+-   resale-flat-prices-based-on-registration-date-from-jan-2015-to-dec-2016.csv
+
+-   ResaleflatpricesbasedonregistrationdatefromJan2017onwards.csv
+
+## 1.2 Load R Packages
+
+R packages required:
+
+-   **tidyverse** for processing datasets, inside this package we will use:
+
+    -   **readr** for reading CSV files
+
+    -   **dplyr** for operations such as filtering, selecting, transforming, summarizing, and joining data
+
+-   **DT** for the creation of interactive HTML tables from R data frames
+
+-   **summarytools** for generating a descriptive statistical summary of the data frame
+
+```{r}
+pacman::p_load(tidyverse, DT, summarytools,ggplot2,ggstatsplot)
+```
+
+# 2 Data Preparation
+
+## 2.1 Import Data
+
+The necessary .CSV files will be imported as a list of CSV files, then compiled into a single dataframe using R.
+
+First, let's take a look at the three CSV files and check their difference.
+
+::: panel-tabset
+## mar-2012-to-dec-2014
+
+```{r}
+#read .csv data files
+data1 <- read.csv("data/resale-flat-prices-based-on-registration-date-from-mar-2012-to-dec-2014.csv")
+glimpse(data1)
+```
+
+## jan-2015-to-dec-2016
+
+```{r}
+#read .csv data files
+data2 <- read.csv("data/resale-flat-prices-based-on-registration-date-from-jan-2015-to-dec-2016.csv")
+glimpse(data2)
+```
+
+## Jan-2017-onwards
+
+```{r}
+#read .csv data files
+data3 <- read.csv("data/ResaleflatpricesbasedonregistrationdatefromJan2017onwards.csv")
+glimpse(data3)
+```
+:::
+
+::: {style="background-color: #E8EAF6;    border-radius: 10px;    padding: 20px;"}
+**Observation from the above glimpse:**
+
+-   The data file "mar-2012-to-dec-2014" is missing the "remaining_lease" column.
+
+-   The "remaining_lease" column in "jan-2015-to-dec-2016" is of integer data type.
+
+-   The "remaining_lease" column in "Jan-2017-onwards" is of character data type.
+
+-   All other column names and data types are identical across the three data files.
+:::
+
+## 2.2 Merge Data
+
+Before merging the three data files, the following steps need to be performed:
+
+Step 1. Add a column named "remaining_lease" to the "mar-2012-to-dec-2014" data file.
+
+::: callout-tip
+## Formula of the column "remaining_lease"
+
+According to research, the tenure of Singapore HDB properties is 99 years.
+
+Thus, the value of "remaining_lease" is calculated as 99 - (month - lease_commence_date). Note that "month" stands for the date of HDB resale in the datasets.
+:::
+
+Step 2. Delete the original "remaining_lease" column in "jan-2015-to-dec-2016" and "Jan-2017-onwards" data file, and create new "remaining_lease" columns with the same formula as above.
+
+```{r}
+# Calculate remaining lease based on the provided formula
+data1 <- data1 %>%
+  mutate(remaining_lease = 99 - (as.numeric(substr(month, 1, 4)) - lease_commence_date))
+
+# delete original remaining_lease column and create a new one
+data2 <- data2 %>%
+  select(-remaining_lease) %>%
+  mutate(remaining_lease = 99 - (as.numeric(substr(month, 1, 4)) - lease_commence_date))
+
+data3 <- data3 %>%
+  select(-remaining_lease) %>%
+  mutate(remaining_lease = 99 - (as.numeric(substr(month, 1, 4)) - lease_commence_date))
+```
+
+Then, we can start merging the three files together.
+
+```{r}
+# Merge data1, data2, and data3
+combined_data <- bind_rows(data1, data2, data3)
+```
+
+## 2.3 Extract Data
+
+To be able to extract the data from 2013 to 2023, we need to do the follow steps:
+
+Step 1. Make sure the data type of column "month" is date-type.
+
+Step 2. Extract data in 2013-2023.
+
+```{r}
+# convert data type of "month" column to date
+combined_data$month <- as.Date(paste0(combined_data$month, "-01"), format = "%Y-%m-%d")
+
+# Extract data in 2013-2023
+extract_data <- combined_data %>%
+  filter(month >= as.Date("2013-01-01") & month <= as.Date("2023-12-31"))
+
+```
+
+## 2.4 Check Data Health
+
+Now that we have a single dataframe, we first check the health of the dataframe by:
+
+using `glimpse()` to look at the structure of the dataframe, data types of the columns, and some values of the dataframe,
+
+using `datatable()` from the DT package to view the dataframe more interactively,
+
+using `duplicate()` to check the dataframe for any duplicated entries using duplicate(),
+
+using `summary()` to check the distribution of values,
+
+using `descr()` to show the descriptive statistics of non-numerical variables.
+
+::: panel-tabset
+## glimpse()
+
+```{r}
+glimpse(extract_data)
+```
+
+## datatable()
+
+```{r}
+datatable(head(extract_data), 
+          class= "compact",
+          rownames = FALSE,
+          width="100%", 
+          options = list(pageLength = 10,scrollX=T))
+```
+
+## duplicate()
+
+```{r}
+str(extract_data[duplicated(extract_data),])
+```
+
+## summary()
+
+```{r}
+summary(extract_data)
+```
+
+## descr()
+
+```{r}
+descr(extract_data)
+```
+:::
+
+::: {style="background-color: #E8EAF6;    border-radius: 10px;    padding: 20px;"}
+**Observation from the above:**
+
+-   From `glimpse()`, we can see the data types of all variables. There are four numerical variables: *floor_area_sqm, lease_commence_date, resale_price, remaining_lease*. Seven categorical variables: *month, town, flat_type, block, street_name, storey_range, flat_model*. Variable *town, flat_type, block, street_name, storey_range, flat_model* are all character-type.
+
+-   From `glimpse()`, we can see that there are a total of 238,519 rows and 11 columns. Combining the `Length` of categorical variables seen in `summary()` and the `N.Valid` from `descr()` for numerical variables, we find that each variable has 238,519 values, indicating that there are no missing values in this dataframe.
+
+-   From `duplicate()`, we can see that there are 610 records have duplicate rows. We speculate that it is caused by duplicate data entry.
+:::
+
+After the above observations, we are going to process the data to make it more suitable for our subsequent analysis.
+
+Step 1. Convert all character-type variables to factor-type variables so that we can analyze the distribution of the different values of categorical variables in subsequent analyses.
+
+```{r}
+# Convert all character-type variables to factor-type variables.
+extract_data <- as.data.frame(lapply(extract_data, function(x) {
+  if(is.character(x)) {
+    return(factor(x))
+  } else {
+    return(x)
+  }
+}))
+```
+
+Step 2. Remove all the duplicate rows.
+
+```{r}
+extract_data <- distinct(extract_data)
+```
+
+Check duplicates again by the code chunk below:
+
+```{r}
+str(extract_data[duplicated(extract_data),])
+```
+
+# 3 Save Data
+
+We will save this dataframe as a rds object for faster loading of data in the future.
+
+```{r}
+write_rds(extract_data, "data/resale_hdb.rds")
+```
+
+# 4. Comfirmatory Data Analysis
+
+Confirmatory data analysis (CDA) is a type of data analysis that seeks to confirm or validate hypotheses or theories based on existing data. Unlike exploratory data analysis (EDA), which is more open-ended and aims to discover patterns and relationships in data, CDA starts with specific hypotheses or models that the researcher wants to test using the data.
+
+## 4.1 Load Processed data
+
+We will reload the processed data for confirmatory data analysis.
+
+```{r}
+resale_hdb <- read_rds("data/resale_hdb.rds")
+```
+
+## 4.2 Distribution of numerical & categorical variables
+
+The instruction is to analyze what factors impact the "resale_price" column in this "resale_hdb" dataset, and how visualizing the distribution of each numerical and categorical column is important for this analysis.
+
+Visualizing the distribution of each column in the dataset is crucial for understanding the patterns, trends and relationships within the data that could influence the resale price.
+
+-   Identify skewness and outliers: Plotting the distribution of numerical columns like "floor_area_sqm" and "resale_price" can reveal if the data is skewed or contains outliers. Skewed distributions or extreme outliers can distort analyses and should be properly handled.
+
+-   Spot patterns and trends: Visualizing categorical columns like "flat_type", "town" and "flat_model" as bar charts or pie charts can uncover which categories are most frequent. Segmenting resale prices by these categories could reveal useful patterns, like certain towns or flat models being associated with higher prices.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+# Set a larger plot window size
+options(repr.plot.width=12, repr.plot.height=12)
+
+# Plot the distribution of numerical columns
+par(mfrow=c(3, 3), mar=c(3, 3, 1, 1))  # Set the layout of the plots and reduce margins
+
+numerical_cols <- c("floor_area_sqm", "lease_commence_date", "resale_price", "remaining_lease")
+for (col in numerical_cols) {
+  hist(resale_hdb[[col]], main=col, xlab="", col="skyblue", border="white")
+}
+
+# Plot the distribution of categorical columns
+categorical_cols <- c("month", "town", "flat_type",  "storey_range", "flat_model")
+for (col in categorical_cols) {
+  barplot(table(resale_hdb[[col]]), main=col, col="skyblue", border="white")
+}
+```
+
+::: callout-tip
+## Observations
+
+Based on the distributions shown in the plots, several observations can be made about the resale HDB dataset:
+
+1.  Most of the flats have a floor area between 60-80 square meters, with some larger flats over 100 sqm. The distribution is right-skewed.
+2.  The lease commencement dates are concentrated in the late 1970s through 1990s, with peaks around 1980 and fewer flats from 2000 onwards. This suggests an older housing stock.
+3.  Resale prices are widely distributed from under \$200,000 to over \$1,000,000, but most fall between \$200,000-600,000. A few high-priced outliers are visible.
+4.  The remaining lease years are spread out, with most between 50-100 years, but some below 50 years. Lease length likely impacts resale values.
+5.  The transaction months span 2013-2021, with the most sales in 2013, fewer in 2017, and a rebound in early 2021. Market conditions seem to fluctuate over time.
+6.  Most of the transactions are for flats in Ang Mo Kio town, with fewer in Geylang and Sengkang. Location is likely a price factor.
+7.  The majority of flats are 3 ROOM, with fewer 1 ROOM and 5 ROOM. Flat type and size probably influence prices. Most flats fall in the 01 TO 03 and 04 TO 06 storey ranges, with the fewest in the highest 37 TO 39 range. Floor level may affect prices.
+8.  Flat models are split mainly between Improved, New Generation and a small number of simplified flats. The flat model could correlate with resale prices.
+:::
+
+## 4.3 Correlation matrix of munerical variables
+
+In order to perform further analysis and modelling, it is essential to explore the correlation between variables. - When building predictive models, correlation plots can guide feature selection by highlighting variables that are strongly correlated with the target variable (like resale price). Strongly correlated predictors may be good candidates to include in the model. - If two variables are very strongly correlated, they may provide redundant information. Correlation plots can identify opportunities to drop one of the variables or combine them into a single feature, simplifying the model.
+
+::: panel-tabset
+## Numerical Variable
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Filter out numerical columns
+numerical_cols <- c("floor_area_sqm", "lease_commence_date", "resale_price", "remaining_lease")
+numerical_data <- resale_hdb[numerical_cols]
+
+# Calculate the correlation matrix
+correlation_matrix <- cor(numerical_data)
+
+# Plot a heatmap of the correlation matrix
+library(ggplot2)
+library(reshape2)
+correlation_melted <- melt(correlation_matrix)
+ggplot(correlation_melted, aes(Var1, Var2, fill=value)) +
+  geom_tile(color="white") +
+  scale_fill_gradient2(low="blue", high="red", mid="white", 
+                       midpoint=0, limit=c(-1,1), space="Lab", 
+                       name="Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        panel.grid.major = element_blank(), 
+        panel.border = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank()) +
+  coord_fixed()
+```
+
+In summary, if we were building a model to predict resale prices, a good initial set of features based on this correlation analysis would be:
+
+-   Floor area
+-   Remaining lease OR lease commencement date (but not both) The low-to-moderate correlations suggest these features capture somewhat independent information relevant to predicting prices. Of course, other factors like location, storey, and flat model would also be worth considering in combination with these.
+
+The critical takeaway is that very strongly correlated predictors (like remaining lease and commencement date) should not be included together as they provide redundant information and can cause model instability. The correlation matrix allows us to be parsimonious and strategic in selecting an optimal set of features.
+
+## Categorical Variable
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+# Install and load the necessary package
+
+library(rcompanion)
+
+# Identify the categorical variables
+categorical_vars <- c("flat_type", "storey_range", "town", "flat_model")
+
+# Create an empty matrix to store Cramér's V values
+cramer_matrix <- matrix(nrow = length(categorical_vars), ncol = length(categorical_vars),
+                        dimnames = list(categorical_vars, categorical_vars))
+
+# Function to calculate Cramér's V
+cramer_v <- function(cont_table) {
+  chi_sq <- chisq.test(cont_table)$statistic
+  n <- sum(cont_table)
+  min_dim <- min(nrow(cont_table), ncol(cont_table))
+  sqrt(chi_sq / (n * (min_dim - 1)))
+}
+
+# Perform chi-square tests and calculate Cramér's V for each pair of variables
+for (i in 1:(length(categorical_vars)-1)) {
+  for (j in (i+1):length(categorical_vars)) {
+    var1 <- categorical_vars[i]
+    var2 <- categorical_vars[j]
+    
+    # Create a contingency table
+    cont_table <- table(resale_hdb[[var1]], resale_hdb[[var2]])
+    
+    # Perform chi-square test
+    chi_sq <- chisq.test(cont_table)
+    
+    # If the association is significant (p < 0.05), calculate Cramér's V
+    if (chi_sq$p.value < 0.05) {
+      cramer_val <- cramer_v(cont_table)
+      cramer_matrix[var1, var2] <- cramer_val
+      cramer_matrix[var2, var1] <- cramer_val
+    }
+  }
+}
+
+short_labels <- c("Type", "Storey", "Town", "Model")
+
+# Create a heatmap of the Cramér's V matrix with shorter labels
+heatmap(cramer_matrix, 
+        col = colorRampPalette(c("blue", "white", "red"))(100),
+        main = "Cramér's V Matrix",
+        xlab = "Categorical Variables",
+        ylab = "Categorical Variables",
+        scale = "none",
+        margins = c(10, 10),
+        labRow = short_labels,  # Use shorter labels for rows
+        labCol = short_labels,  # Use shorter labels for columns
+        cex.axis = 0.8,
+        cex.lab = 0.8)
+```
+
+-   The strong association between "town" and "flat_model" suggests that certain towns may have distinct distributions of flat models. This could indicate that specific flat models are more prevalent in certain areas.
+-   The moderate associations of "storey_range" with "flat_type" and "flat_model" imply that the storey range of a flat may be related to its type and model. For example, certain flat types or models might be more common in specific storey ranges. The relatively weaker associations of "flat_type" with other variables suggest that the flat type may have less influence on the other categorical variables compared to the relationships among the other variables.
+:::
+
+## 4.4 Hypothesis Testing
+
+### 4.4.1 ANOVA test: Town vs. Resale Price
+
+The ANOVA test in this context helps us understand the impact of the factors on the 'resale_price' variable. The code chunk below test on the the variable "town" and "resale_price"
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+anova_result <- aov(resale_price ~ town, data=resale_hdb)
+
+# Visualize ANOVA results
+library(ggplot2)
+plot_ANOVA <- ggplot(resale_hdb, aes(x=town, y=resale_price)) +
+  geom_boxplot(fill="skyblue") +
+  labs(title="ANOVA: Town vs. Resale Price", x="Town", y="Resale Price") +
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+print(plot_ANOVA)
+
+# Summary of ANOVA results
+summary(anova_result)
+```
+
+A small p-value from an ANOVA test indicates that there is strong evidence against the null hypothesis, which suggests that the mean 'resale_price' is the same across all 'towns'. In other words, the p-value indicates that the 'town' variable significantly affects the 'resale_price'. Therefore, with a very small p-value, we would reject the null hypothesis and conclude that there is a statistically significant difference in 'resale_price' among the different 'towns'.
+
+### 4.4.2 Non-parametric Test of town and flat type
+
+The code chunk below is Pearson's chi-squared test, which assesses the association between two categorical variables. It allows us to explore the relationship between variables.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+plot_barstats_town <- function(metric = "town", minvisitors = 30, testtype = "np", conf = 0.95) {
+  metric_text = case_when(
+    metric == "remaining_lease" ~ "Remaining Lease",
+    metric == "storey_range" ~ "Storey Range",
+    metric == "flat_type" ~ "Flat Type",
+    TRUE ~ metric
+  )
+  
+  hdbdata_barstats <- resale_hdb
+  
+  hdbdata_barstats %>%
+    ggbarstats(x = flat_type, y = !!sym(metric),
+               xlab = "Flat Type", ylab = metric_text,
+               type = testtype, conf.level = conf,
+               palette = "Set2", legend = "top") +
+    coord_flip() +
+    labs(fill = "Flat Type", x = "Town", y = "Percentage") +
+    theme(legend.position = "top",axis.title.y = element_text(hjust = -10))
+}
+
+plot_barstats_town(metric = "town", minvisitors = 30, testtype = "np", conf = 0.95)
+```
+
+::: callout-tip
+## key observations from the plot:
+
+"MULTI-GENERATION" flats are more prevalent in towns like Yishun, Woodlands, and Tampines, while they are least common in towns like Bishan, Bukit Batok, and Ang Mo Kio. "EXECUTIVE" flats have a higher percentage in towns such as Pasir Ris, Serangoon, and Marine Parade, compared to other towns. Larger flat types ("5 ROOM," "4 ROOM," and "3 ROOM") generally make up a significant portion of the housing distribution across all towns. Smaller flat types ("2 ROOM" and "1 ROOM") have a relatively lower percentage across most towns, with a slightly higher presence in towns like Kallang/Whampoa, Bukit Merah, and Central Area.
+:::
+
+# 5. Clustering
+
+Clustering is an unsupervised machine learning technique that aims to group similar data points together based on their inherent characteristics or features. In this analysis, we explore two popular clustering methods, K-means clustering and latent clustering analysis, to gain insights into the patterns and structures within the housing resale prices dataset.
+
+The dataset contains information about resale prices of housing units in Singapore, along with various attributes such as town, flat type, storey range, floor area, flat model, lease commence date, and remaining lease. By applying clustering techniques, we aim to uncover hidden groupings or segments within the data that share similar characteristics and pricing patterns.
+
+## 5.1 K-means clustering
+
+K-means clustering is a centroid-based algorithm that partitions the data into a specified number of clusters (K). It iteratively assigns each data point to the nearest centroid (cluster center) based on a distance metric, typically Euclidean distance. The algorithm optimizes the cluster assignments by minimizing the within-cluster sum of squared distances.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+# Load required packages
+library(dplyr)
+library(caret)
+library(cluster)
+library(factoextra)
+
+# Load the data
+data<- read_rds("data/resale_hdb.rds")
+data <- subset(data, select = -c(block, street_name))
+
+# Check for missing values and infinite/NaN values
+missing_cols <- colSums(is.na(data)) > 0
+infinite_cols <- sapply(data, function(x) any(!is.finite(x)))
+
+# Label encoding for categorical columns
+categorical_cols <- sapply(data, is.factor)
+data_encoded <- data
+for (col in names(data)[categorical_cols]) {
+  data_encoded[[col]] <- as.integer(factor(data_encoded[[col]]))
+}
+
+# Convert all columns to numeric
+data_encoded <- data.frame(lapply(data_encoded, as.numeric))
+
+# Check for missing values in data_encoded
+missing_encoded <- colSums(is.na(data_encoded))
+if (any(missing_encoded > 0)) {
+  cat("Columns with missing values in data_encoded:\n")
+  print(missing_encoded[missing_encoded > 0])
+} else {
+  cat("No missing values found in data_encoded.\n")
+}
+
+# Check for infinite values in data_encoded
+infinite_encoded <- sapply(data_encoded, function(x) any(!is.finite(x)))
+if (any(infinite_encoded)) {
+  cat("Columns with infinite values in data_encoded:\n")
+  print(names(data_encoded)[infinite_encoded])
+} else {
+  cat("No infinite values found in data_encoded.\n")
+}
+
+# Set the number of clusters
+k <- 3 # Determine the optimal number of clusters before running this
+
+# Run k-means clustering on the encoded data
+km.res <- kmeans(data_encoded, centers = k)
+
+# Add cluster assignments to the original data
+data$cluster <- km.res$cluster
+
+# Visualize clusters
+fviz_cluster(km.res, data = data_encoded)
+
+# Visualize the distribution for each column variable for each cluster
+library(ggplot2)
+
+# Function to create stacked bar chart for a given column
+plot_stacked_bar <- function(data, column) {
+  ggplot(data, aes(x = factor(cluster), fill = factor(get(column)))) +
+    geom_bar(position = "fill") +
+    labs(x = "Cluster", y = "Proportion", title = paste("Distribution of", column)) +
+    theme_minimal()
+}
+
+# Plot stacked bar charts for each categorical column
+for (col in names(data)[categorical_cols]) {
+  print(plot_stacked_bar(data, col))
+}
+```
+
+## 5.2 Latent Clustering Analysis
+
+On the other hand, latent clustering analysis, also known as model-based clustering or finite mixture modeling, assumes that the data is generated from a mixture of underlying probability distributions. Each cluster is represented by a different distribution, and the goal is to identify the parameters of these distributions and assign each data point to the most likely cluster. Latent clustering analysis provides a probabilistic framework for modeling the data and allows for the estimation of the optimal number of clusters based on statistical criteria.
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+# Load required packages
+library(dplyr)
+library(poLCA)
+library(MASS)
+
+# Load the data
+data<- read_rds("data/resale_hdb.rds")
+
+# Drop the "block" and "street_name" columns
+data <- subset(data, select = -c(block, street_name))
+
+# Discretize continuous variables
+data$resale_price_bin <- cut(data$resale_price, breaks = c(0, 200000, 400000, 600000, Inf),
+                             labels = c("Low", "Medium", "High", "Very High"))
+data$floor_area_sqm_bin <- cut(data$floor_area_sqm, breaks = c(0, 50, 100, 150, Inf),
+                               labels = c("Small", "Medium", "Large", "Very Large"))
+data$remaining_lease_bin <- cut(data$remaining_lease, breaks = c(0, 50, 75, 100, Inf),
+                                labels = c("Short", "Medium", "Long", "Very Long"))
+
+# Convert categorical variables to factors and recode them as positive integers
+categorical_vars <- c("town", "flat_type", "storey_range", "flat_model",
+                      "lease_commence_date", "resale_price_bin", "floor_area_sqm_bin", "remaining_lease_bin")
+for (var in categorical_vars) {
+  data[[var]] <- as.integer(factor(data[[var]]))
+}
+
+# Perform latent clustering analysis
+lca_model <- poLCA(formula = cbind(town, flat_type, storey_range, flat_model,
+                                   lease_commence_date, resale_price_bin,
+                                   floor_area_sqm_bin, remaining_lease_bin) ~ 1,
+                    data = data, nclass = 3, maxiter = 1000, graphs = FALSE)
+
+# Get the cluster assignments
+data$cluster <- lca_model$predclass
+
+# Print the model summary
+summary(lca_model)
+
+# Visualize the distribution for each column variable for each cluster
+library(ggplot2)
+
+# Function to create stacked bar chart for a given column
+plot_stacked_bar <- function(data, column) {
+  ggplot(data, aes(x = factor(cluster), fill = factor(get(column)))) +
+    geom_bar(position = "fill") +
+    labs(x = "Cluster", y = "Proportion", title = paste("Distribution of", column)) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 0, hjust = 1))
+}
+
+# Plot stacked bar charts for each categorical variable
+for (var in categorical_vars) {
+  print(plot_stacked_bar(data, var))
+}
+```
+
+# 6 Decision tree Analysis
+
+The HDB Resale Price dataset contains information about resale transactions of public housing properties in Singapore. The dataset includes various features such as the month of the transaction, town, flat type, storey range, floor area, flat model, lease commence date, and the resale price. The goal is to build predictive models that can estimate the resale price of HDB flats based on these features.
+
+## 6.1 Regression Tree
+
+The decision tree model for the HDB Resale Price dataset will start with the entire dataset at the root node and then recursively split the data based on the features that provide the most information gain. The splitting process continues until a stopping criterion is met, such as reaching a maximum depth or a minimum number of samples in a leaf node. The resulting tree structure will allow us to make predictions by traversing the tree based on the feature values of a given HDB flat.
+
+```{r}
+pacman::p_load(dplyr, rpart, rpart.plot)
+```
+
+```{r}
+#| code-fold: true
+#| code-summary: "Show the code"
+
+
+library(rpart)
+library(rpart.plot)
+
+# Load the data
+data<- read_rds("data/resale_hdb.rds")
+
+# Drop the "block" and "street_name" columns
+data <- subset(data, select = -c(block, street_name))
+
+
+# Assuming your dataset is named 'data'
+# Convert relevant columns to factors
+data$town <- as.factor(data$town)
+data$flat_type <- as.factor(data$flat_type)
+data$storey_range <- as.factor(data$storey_range)
+data$flat_model <- as.factor(data$flat_model)
+
+# Build the decision tree model
+model <- rpart(resale_price ~ ., data = data, method = "anova")
+
+# Visualize the decision tree
+rpart.plot(model, main = "Decision Tree for Resale Price")
+```
+
+# 7. Shiny App Prototype Design
+
+![![](images/clipboard-3101647271.png)](images/clipboard-4051744684.png)
+
+![](images/clipboard-2277921120.png)
